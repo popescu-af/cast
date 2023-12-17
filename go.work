@@ -1,0 +1,11 @@
+go 1.21.0
+
+use (
+	./app
+	./chromecast
+	./goodboi
+	./logger
+	./model
+	./source
+	./utils
+)

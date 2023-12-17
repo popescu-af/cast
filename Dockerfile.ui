@@ -1,0 +1,19 @@
+FROM alpine AS build
+
+WORKDIR /base
+COPY ui/dist/web web/
+
+ARG SERVICE_URL
+ENV SERVICE_URL=$SERVICE_URL
+
+WORKDIR /base/web/
+RUN echo "$SERVICE_URL" > assets/cast-service-url.txt
+RUN md5sum < assets/cast-service-url.txt | cut -f1 -d' ' > /md5.txt
+RUN sed -i -E \
+        's|"assets/cast-service-url.txt": "([a-f0-9]+)"|"assets/cast-service-url.txt": "'$(cat /md5.txt)'"|g' \
+        flutter_service_worker.js
+
+
+FROM nginx:alpine
+
+COPY --from=build /base/web/. /usr/share/nginx/html/

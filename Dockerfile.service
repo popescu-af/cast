@@ -1,0 +1,42 @@
+# see https://github.com/chemidy/smallest-secured-golang-docker-image
+
+##################################
+# STEP 1 build executable binary #
+##################################
+FROM golang:1.21-alpine as builder
+
+# Create appuser
+ENV USER=appuser
+ENV UID=10001
+
+# See https://stackoverflow.com/a/55757473/12429735
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
+
+
+##############################
+# STEP 2 build a small image #
+##############################
+FROM golang:1.21-alpine
+
+# Import from builder.
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+# Copy our static executable
+COPY ./build/cast-service /go/bin/cast-service
+
+# Use an unprivileged user.
+USER appuser:appuser
+
+# Set the working directory.
+WORKDIR /base
+
+# Run the hello binary.
+ENTRYPOINT ["/go/bin/cast-service"]
