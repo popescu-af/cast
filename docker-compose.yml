@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  ftp-server:
+    environment:
+      - FTP_PASS=123
+      - FTP_USER=user
+    image: garethflowers/ftp-server
+    ports:
+      - '20-21:20-21/tcp'
+      - '40000-40009:40000-40009/tcp' # Only needed for passive mode
+    volumes:
+      - ${MEDIA_LIBRARY_PATH}:/home/user
+
   media-browser:
     image: filebrowser/filebrowser
     ports:
