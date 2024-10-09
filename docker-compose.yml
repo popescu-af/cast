@@ -3,7 +3,7 @@ version: '3.8'
 services:
   ftp-server:
     environment:
-      - FTP_PASS=123
+      - FTP_PASS=12345678
       - FTP_USER=user
     image: garethflowers/ftp-server
     ports:
